@@ -11,20 +11,35 @@ public class CharacterBehavior : MonoBehaviour {
     public GameObject bullet;
     private Animator animator;
     private AudioSource audioSource;
+
+    private GameObject bulletObjectPool;
+    private ObjectPooler bulletobjectPooler;
     
 	void Start () {
         characterStat = gameObject.GetComponent<CharacterStat>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         animator = gameObject.GetComponent<Animator>();
         audioSource = gameObject.GetComponent<AudioSource>();
+        if(gameObject.name.Contains("Character 1"))
+        {
+            bulletObjectPool = GameObject.Find("Bullet1ObjectPool");
+        }
+        else if (gameObject.name.Contains("Character 2"))
+        {
+            bulletObjectPool = GameObject.Find("Bullet2ObjectPool");
+        }
+        bulletobjectPooler = bulletObjectPool.GetComponent<ObjectPooler>();
     }
 
     public void attack(int damage)
     {
+        GameObject bullet = bulletobjectPooler.getObject();
+        if (bullet == null) return;
+        bullet.transform.position = gameObject.transform.position;
+        bullet.GetComponent<BulletBehavior>().setDamage(damage);
         animator.SetTrigger("Attack");
         audioSource.PlayOneShot(audioSource.clip);
-        GameObject currentBullet = Instantiate(bullet, transform.position, Quaternion.identity);
-        currentBullet.GetComponent<BulletBehavior>().setDamage(damage);
+        bullet.GetComponent<BulletBehavior>().Spawn();
     }
 	
 	void Update () {
