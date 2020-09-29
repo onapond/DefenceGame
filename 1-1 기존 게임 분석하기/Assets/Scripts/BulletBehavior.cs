@@ -9,7 +9,7 @@ public class BulletBehavior : MonoBehaviour {
     public GameObject character;
 
     public float activeTime = 3.0f;
-    public float spawnTime;
+    
 
     private int damage;
 
@@ -18,24 +18,24 @@ public class BulletBehavior : MonoBehaviour {
         damage = input;
     }
 
+    private void OnEnable()//활성화되었을 때 콜백
+    {
+        StartCoroutine(BulletInactive(activeTime));
+    }
+
+    IEnumerator BulletInactive (float activeTime)
+    {
+        yield return new WaitForSeconds(activeTime);
+        gameObject.SetActive(false);
+    }
     public void Spawn()
     {
-        gameObject.SetActive(true);
-        spawnTime = Time.time;
+        gameObject.SetActive(true);       
     }
-	void Start () {
-        Spawn();
-	}
-	
+		
 	void Update () {
-        if(Time.time-spawnTime>=activeTime)
-        {
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            transform.Translate(Vector2.right * speed * Time.deltaTime);
-        }     
+                   transform.Translate(Vector2.right * speed * Time.deltaTime);
+       
 	}
 
     private void OnTriggerEnter2D(Collider2D other)
